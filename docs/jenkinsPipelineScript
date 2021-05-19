@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Git clone') {
+            
+            steps {
+                git branch: 'main', credentialsId: 'GIT_HUB_CREDENTIALS', url: 'https://github.com/joserio81/adidas'
+            }
+        }
+        stage('Docker build') {
+            steps {
+                sh "/usr/local/bin/docker build -t jriosor/webserver:4.0 ."
+            }
+        }
+        stage('Docker push') {
+            environment {
+                DOCKER_HUB_CREDENTIALS= credentials('DOCKER_HUB_CREDENTIALS')
+            }
+            steps {
+                sh('/usr/local/bin/docker login --username jriosor -p ${DOCKER_HUB_CREDENTIALS} docker.io && /usr/local/bin/docker push jriosor/webserver:4.0')
+            }
+        }
+        stage('Kubectl deploy') {
+            steps {
+                sh "/usr/local/bin/kubectl apply -f deploy.yaml"
+                sh "sleep 15"
+                sh "/usr/local/bin/kubectl get po --field-selector=status.phase=Running -l type=webserver --no-headers"
+            }
+        }
+    }
+}
+

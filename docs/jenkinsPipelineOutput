@@ -1,0 +1,95 @@
+Started by GitHub push by joserio81
+Running in Durability level: MAX_SURVIVABILITY
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins  in /Users/Jose/.jenkins/workspace/SpringBoot
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Git clone)
+[Pipeline] git
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential GIT_HUB_CREDENTIALS
+ > /usr/local/bin/git rev-parse --resolve-git-dir /Users/Jose/.jenkins/workspace/SpringBoot/.git # timeout=10
+Fetching changes from the remote Git repository
+ > /usr/local/bin/git config remote.origin.url https://github.com/joserio81/adidas # timeout=10
+Fetching upstream changes from https://github.com/joserio81/adidas
+ > /usr/local/bin/git --version # timeout=10
+ > git --version # 'git version 2.26.2'
+using GIT_ASKPASS to set credentials GIT_HUB_CREDENTIALS
+ > /usr/local/bin/git fetch --tags --force --progress -- https://github.com/joserio81/adidas +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > /usr/local/bin/git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision cd1d7ca855346a19af4e42c3f8fc6d104b2f38b0 (refs/remotes/origin/main)
+ > /usr/local/bin/git config core.sparsecheckout # timeout=10
+ > /usr/local/bin/git checkout -f cd1d7ca855346a19af4e42c3f8fc6d104b2f38b0 # timeout=10
+ > /usr/local/bin/git branch -a -v --no-abbrev # timeout=10
+ > /usr/local/bin/git branch -D main # timeout=10
+ > /usr/local/bin/git checkout -b main cd1d7ca855346a19af4e42c3f8fc6d104b2f38b0 # timeout=10
+Commit message: "Update Dockerfile"
+ > /usr/local/bin/git rev-list --no-walk 87890b7f0dd401f7a3ec679f9f7437806c3538a4 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Docker build)
+[Pipeline] sh
++ /usr/local/bin/docker build -t jriosor/webserver:4.0 .
+Sending build context to Docker daemon  247.8kB
+
+Step 1/2 : FROM nginx:latest
+ ---> f0b8a9a54136
+Step 2/2 : RUN echo "Hello Jose!"
+ ---> Using cache
+ ---> 63448422d1d9
+Successfully built 63448422d1d9
+Successfully tagged jriosor/webserver:4.0
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Docker push)
+[Pipeline] withCredentials
+Masking supported pattern matches of $DOCKER_HUB_CREDENTIALS
+[Pipeline] {
+[Pipeline] sh
++ /usr/local/bin/docker login --username jriosor -p **** docker.io
+WARNING! Using --password via the CLI is insecure. Use --password-stdin.
+WARNING! Your password will be stored unencrypted in /Users/Jose/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
++ /usr/local/bin/docker push jriosor/webserver:4.0
+The push refers to repository [docker.io/jriosor/webserver]
+f0f30197ccf9: Preparing
+eeb14ff930d4: Preparing
+c9732df61184: Preparing
+4b8db2d7f35a: Preparing
+431f409d4c5a: Preparing
+02c055ef67f5: Preparing
+02c055ef67f5: Waiting
+eeb14ff930d4: Layer already exists
+c9732df61184: Layer already exists
+f0f30197ccf9: Layer already exists
+4b8db2d7f35a: Layer already exists
+02c055ef67f5: Layer already exists
+431f409d4c5a: Layer already exists
+4.0: digest: sha256:9893e4aeb9aaefa54332717114300cabe019c78aec35fdabedac95ba179344ee size: 1570
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Kubectl deploy)
+[Pipeline] sh
++ /usr/local/bin/kubectl apply -f deploy.yaml
+pod "webserver" created
+[Pipeline] sh
++ sleep 15
+[Pipeline] sh
++ /usr/local/bin/kubectl get po --field-selector=status.phase=Running -l type=webserver --no-headers
+webserver   1/1       Running   0         17s
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
