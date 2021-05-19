@@ -5,4 +5,4 @@ To improve application observability, I would implement:
 3. Prometheus/ Grafana
 
 to measure and ensure SLA:
-I would implement a 'devops docker' with running scripts monitoring the system, combined with Pagerduty to provide reliable notifications, automatic escalations, on-call scheduling, and other functionality to help teams detect and fix infrastructure problems quickly. SLOs 99.5% of requests will be completed in 5ms
+I would implement a 'devops docker' with running scripts monitoring the system, combined with Pagerduty to provide reliable notifications, automatic escalations, on-call scheduling, and other functionality to help teams detect and fix infrastructure problems quickly. SLOs 99.5% of requests will be completed in 10ms
